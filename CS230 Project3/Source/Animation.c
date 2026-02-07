@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 #include "stdafx.h"
-#include "Stub.h"
+#include "Animation.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -19,6 +19,35 @@
 //------------------------------------------------------------------------------
 // Private Structures:
 //------------------------------------------------------------------------------
+
+typedef struct Animation
+{
+	// Pointer to the parent Entity associated with the Animation component.
+	Entity* parent;
+
+	// The current frame being displayed.
+	unsigned int frameIndex;
+
+	// The maximum number of frames in the sequence.
+	unsigned int frameCount;
+
+	// The time remaining for the current frame.
+	float frameDelay;
+
+	// The amount of time to display each successive frame.
+	float frameDuration;
+
+	// True if the animation is running; false if the animation has stopped.
+	bool isRunning;
+
+	// True if the animation loops back to the beginning.
+	bool isLooping;
+
+	// True if the end of the animation sequence has been reached, false otherwise.
+	// (Hint: This should be true for only one game loop.)
+	bool isDone;
+
+} Animation;
 
 //------------------------------------------------------------------------------
 // Public Variables:
@@ -36,24 +65,47 @@
 // Public Functions:
 //------------------------------------------------------------------------------
 
-// Initialize the ...
-void StubInit()
+Animation* AnimationCreate(void)
 {
+	Animation* animationComponent = calloc(1, sizeof(Animation));
+	return animationComponent;
 }
 
-// Update the ...
-// Params:
-//	 dt = Change in time (in seconds) since the last game loop.
-void StubUpdate(float dt)
+void AnimationFree(Animation** animation)
 {
-	/* Tell the compiler that the 'dt' variable is unused. */
-	UNREFERENCED_PARAMETER(dt);
+	animation;
+}
+void AnimationRead(Animation* animation, Stream stream)
+{
+	stream;
+	animation;
+}
+void AnimationSetParent(Animation* animation, Entity* parent)
+{
+	animation;
+	parent;
+}
+void AnimationPlay(Animation* animation, int frameCount, float frameDuration, bool isLooping)
+{
+	animation;
+	frameCount;
+	frameDuration;
+	isLooping;
 }
 
-// Shutdown the ...
-void StubExit()
+void AnimationUpdate(Animation* animation, float dt)
 {
+	animation;
+	dt;
 }
+bool AnimationIsDone(const Animation* animation)
+{
+	animation;
+	return true;
+}
+
+
+
 
 //------------------------------------------------------------------------------
 // Private Functions:

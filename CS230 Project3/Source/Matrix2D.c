@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 
 #include "stdafx.h"
-#include "Stub.h"
+#include "Matrix2D.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -36,24 +36,55 @@
 // Public Functions:
 //------------------------------------------------------------------------------
 
-// Initialize the ...
-void StubInit()
+void Matrix2DIdentity(Matrix2D* pResult)
 {
+	pResult;
+
+
 }
 
-// Update the ...
-// Params:
-//	 dt = Change in time (in seconds) since the last game loop.
-void StubUpdate(float dt)
+void Matrix2DTranspose(Matrix2D* pResult, const Matrix2D* pMtx)
 {
-	/* Tell the compiler that the 'dt' variable is unused. */
-	UNREFERENCED_PARAMETER(dt);
+	pResult;
+	pMtx;
+
+}
+void Matrix2DConcat(Matrix2D* pResult, const Matrix2D* pMtx0, const Matrix2D* pMtx1)
+{
+	pResult;
+	pMtx0;
+	pMtx1;
+}
+void Matrix2DTranslate(Matrix2D* pResult, float x, float y)
+{
+	x;
+	pResult;
+	y;
+}
+void Matrix2DScale(Matrix2D* pResult, float x, float y)
+{
+	pResult;
+	x;
+	y;
+}
+void Matrix2DRotDeg(Matrix2D* pResult, float angle)
+{
+	angle;
+	pResult;
+}
+void Matrix2DRotRad(Matrix2D* pResult, float angle)
+{
+	pResult;
+	angle;
+
+}
+void Matrix2DMultVec(Vector2D* pResult, const Matrix2D* pMtx, const Vector2D* pVec)
+{
+	pResult;
+	pMtx;
+	pVec;
 }
 
-// Shutdown the ...
-void StubExit()
-{
-}
 
 //------------------------------------------------------------------------------
 // Private Functions:

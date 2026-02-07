@@ -11,6 +11,7 @@
 
 #include "stdafx.h"
 #include "CheatSystem.h"
+#include "Scene.h"
 
 
 
@@ -21,6 +22,13 @@
 //------------------------------------------------------------------------------
 // Private Structures:
 //------------------------------------------------------------------------------
+
+typedef struct CheatSystemKeyBinding
+{
+	char key;
+	const Scene* (*getInstance)(void);
+
+} CheatSystemKeyBinding;
 
 //------------------------------------------------------------------------------
 // Public Variables:
@@ -37,4 +45,10 @@
 //------------------------------------------------------------------------------
 // Public Functions:
 //------------------------------------------------------------------------------
+
+BaseSystem* CheatSystemGetInstance(void)
+{
+	BaseSystem* baseSystm = (BaseSystem*)malloc(sizeof(CheatSystemKeyBinding));
+	return baseSystm;
+}
 

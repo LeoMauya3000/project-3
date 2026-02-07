@@ -115,7 +115,7 @@ const Vector2D* PhysicsGetVelocity(const Physics* physics)
 	}
 
 }
-const Vector2D* PhysicsGetOldTranslation(Physics* physics)
+const Vector2D* PhysicsGetOldTranslation(const Physics* physics)
 {
 	if (physics)
 	{
