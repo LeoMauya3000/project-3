@@ -172,7 +172,7 @@ static void Level1SceneLoad(void)
 	
 
 	textMesh = MeshCreate();
-	MeshBuildQuad(textMesh, 0.5f, 0.5f, 1.0f, 1.0f, "Mesh16x8");
+	MeshBuildQuad(textMesh, 0.5f, 0.5f, 1.0f/16, 1.0f/8, "Mesh16x8");
 	textSpriteSource = SpriteSourceCreate();
 	SpriteSourceLoadTexture(textSpriteSource, 16, 8, "Roboto_Mono_black.png");
 
@@ -357,7 +357,7 @@ static void Level1SceneSetMonkeyState(Entity* entity, Monkeystates newState)
 {
 	Sprite* monkeySpriteLocal = EntityGetSprite(entity);
 	Animation* monkeyAnimationComponent = EntityGetAnimation(entity);
-
+	AnimationSetParent(monkeyAnimationComponent, entity);
 
 	if (monkeyState != (Monkeystates)newState)
 	{

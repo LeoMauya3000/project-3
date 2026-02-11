@@ -11,6 +11,9 @@
 
 #include "stdafx.h"
 #include "Animation.h"
+#include "Stream.h"
+#include "Sprite.h"
+#include "Entity.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -60,7 +63,7 @@ typedef struct Animation
 //------------------------------------------------------------------------------
 // Private Function Declarations:
 //------------------------------------------------------------------------------
-
+static void AdvanceFrame(Animation* animation);
 //------------------------------------------------------------------------------
 // Public Functions:
 //------------------------------------------------------------------------------
@@ -73,35 +76,83 @@ Animation* AnimationCreate(void)
 
 void AnimationFree(Animation** animation)
 {
-	animation;
+	if (animation)
+	{
+		free(*animation);
+		*animation = NULL;
+	}
 }
 void AnimationRead(Animation* animation, Stream stream)
 {
-	stream;
-	animation;
+
+
+	if (animation && stream)
+	{
+		animation->frameCount = StreamReadInt(stream);
+		animation->frameIndex = StreamReadInt(stream);
+		animation->frameDelay = StreamReadFloat(stream);
+		animation->frameDuration = StreamReadFloat(stream);
+		animation->isRunning = StreamReadBoolean(stream);
+		animation->isLooping = StreamReadBoolean(stream);
+	}
+
 }
 void AnimationSetParent(Animation* animation, Entity* parent)
 {
-	animation;
-	parent;
+	if (animation && parent)
+	{
+		animation->parent = parent;
+	}
 }
 void AnimationPlay(Animation* animation, int frameCount, float frameDuration, bool isLooping)
 {
-	animation;
-	frameCount;
-	frameDuration;
-	isLooping;
+	if (animation)
+	{
+		animation->frameCount = frameCount;
+		animation->frameDuration = frameDuration;
+		animation->isLooping = isLooping;
+		Sprite* entitySprite = EntityGetSprite(animation->parent);
+		SpriteSetFrame(entitySprite, animation->frameIndex);
+	}
+	else
+	{
+		return;
+	}
 }
 
 void AnimationUpdate(Animation* animation, float dt)
 {
-	animation;
-	dt;
+	if (animation)
+	{
+		animation->isDone = false;
+		if (animation->isRunning)
+		{
+			animation->frameDelay -= dt;
+			if (animation->frameDelay <= 0)
+			{
+				AdvanceFrame(animation);
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
+	else
+	{
+		return;
+	}
 }
 bool AnimationIsDone(const Animation* animation)
 {
-	animation;
-	return true;
+	if (animation->frameIndex >= animation->frameCount - 1)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}	
 }
 
 
@@ -111,3 +162,53 @@ bool AnimationIsDone(const Animation* animation)
 // Private Functions:
 //------------------------------------------------------------------------------
 
+static void AdvanceFrame(Animation* animation)
+{
+	Sprite* entitySprite = EntityGetSprite(animation->parent);
+	if (animation)
+	{
+		animation->frameIndex++;
+		if (animation->frameIndex >= animation->frameCount)
+		{
+
+			if (animation->isLooping)
+			{
+				animation->frameIndex = 0;
+				animation->isDone = true;
+				if (animation->isRunning)
+				{
+					animation->frameDelay = 0;
+					return;
+				}
+			}
+			else
+			{
+				animation->frameIndex = animation->frameCount - 1;
+				animation->isRunning = false;
+				animation->isDone = true;
+				if (animation->isRunning)
+				{
+					animation->frameDelay = 0;
+					return;
+				}
+			}
+
+
+		}
+		if (animation->isRunning)
+		{
+			SpriteSetFrame(entitySprite, animation->frameIndex);
+			animation->frameDelay += animation->frameDuration;
+			return;
+		}
+		else
+		{
+			animation->frameDelay = 0;
+			return;
+		}
+	}
+	else
+	{
+		return;
+	}
+}

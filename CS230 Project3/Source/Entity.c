@@ -15,6 +15,7 @@
 #include "Sprite.h"
 #include "Stream.h"
 #include "Transform.h"
+#include "Animation.h"
 
 
 //------------------------------------------------------------------------------
@@ -115,6 +116,11 @@ void EntityRead(Entity* entity, Stream stream)
 				entity->sprite = SpriteCreate();
 				SpriteRead(entity->sprite, stream);
 			}
+			else if (!strncmp(token, "Animation", _countof("Animation")))
+			{
+				entity->animation = AnimationCreate();
+				AnimationRead(entity->animation, stream);
+			}
 			else if (strcmp(token, "") == 0)
 			{
 				return;
@@ -199,6 +205,7 @@ void EntityAddAnimation(Entity* entity, Animation* animation)
 {
 	if (entity && animation)
 	{
+		AnimationSetParent(animation, entity);
 		entity->animation = animation;
 	}
 }

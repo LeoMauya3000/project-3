@@ -105,3 +105,25 @@ const char* StreamReadToken(Stream stream)
 	
  
 } 
+bool StreamReadBoolean(Stream stream)
+{
+	if (stream)
+	{
+		static char tokenBuffer[1024];
+		tokenBuffer[0] = 0;
+		fscanf_s(stream, "%s", tokenBuffer, (unsigned)_countof(tokenBuffer));
+
+		if (tokenBuffer)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
