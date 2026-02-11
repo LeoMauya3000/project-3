@@ -93,6 +93,7 @@ void SpriteRender(const Sprite* sprite, Transform* transform)
 {
 	 Matrix2D matrix = *TransformGetMatrix(transform);
 
+
 	if (sprite->spriteSource != NULL)
 	{
 		DGL_Graphics_SetShaderMode(DGL_PSM_TEXTURE, DGL_VSM_DEFAULT);	
@@ -117,18 +118,20 @@ void SpriteRender(const Sprite* sprite, Transform* transform)
 	}
 	else
 	{
-		unsigned int characterIndex = 0;
+		int characterIndex = 0;
+		int num = 'a';
 		const char* character = sprite->text;
 		Matrix2D localMatrix = *TransformGetMatrix(transform);
 		Matrix2DTranslate(&localMatrix, localMatrix.m[0][3], 0);
 		while (character != '\0')
 		{
-			characterIndex = *character - 'a';
-
+			characterIndex = 0;
 			if (*character == ' ')
 			{
-				characterIndex = 0;
+				return;
+
 			}
+			characterIndex = *character - num;
 			character++;
 			SpriteSourceSetTextureOffset(sprite->spriteSource, characterIndex);
 			DGL_Graphics_SetCB_TransformMatrix(&localMatrix);
@@ -137,7 +140,7 @@ void SpriteRender(const Sprite* sprite, Transform* transform)
 
 		}
 	}
-	MeshRender(sprite->mesh);
+
 }
 float SpriteGetAlpha(const Sprite* sprite)
 {
@@ -184,12 +187,9 @@ void SpriteSetSpriteSource(Sprite* sprite, const SpriteSource* spriteSource)
 }
 void SpriteSetText(Sprite* sprite, const char* text)
 {
-
-
-
-
-
-	sprite;
-	text;
+	if (sprite)
+	{
+		sprite->text = text;
+     }
 }
 

@@ -26,20 +26,24 @@
 #include "EntityFactory.h"
 #include "SandboxScene.h"
 #include "DemoScene.h"
+#include "Animation.h"
+#include "Vector2D.h"
 
 
 //------------------------------------------------------------------------------
 // Private Constants:
 //
 //------------------------------------------------------------------------------
- enum Monkeystates
+ typedef enum Monkeystates
 {
 	MonkeyInvalid = -1,
 	MonkeyIdle,
 	MonkeyWalk,
 	MonkeyJump
 
-};
+}Monkeystates;
+
+
 	static const float groundHeight = -150.0f;
 	static const float moveVelocity = 500.0f;
 	static const float jumpVelocity = 1000.0f;
@@ -64,7 +68,7 @@ typedef struct Level1Scene
 
 } Level1Scene;
  static char livesBuffer[16];
- enum MonkeyStates monkeyState = MonkeyInvalid;
+
  static Mesh* createdMesh;
  static SpriteSource* createdSpriteSource;
  static Entity* createdEntity;
@@ -78,13 +82,12 @@ typedef struct Level1Scene
  static SpriteSource* monkeySpriteSourceIdle;
  static SpriteSource* monkeySpriteSourceWalk;
  static SpriteSource* monkeySpriteSourceJump;
-
+ 
  static Entity* livesTextEntity;
  static Mesh* textMesh;
  static Sprite* textSprite;
  static SpriteSource* textSpriteSource;
- 
-
+ Monkeystates monkeyState = MonkeyInvalid;
 
 //------------------------------------------------------------------------------
 // Public Variables:
@@ -106,8 +109,9 @@ static void Level1SceneUpdate(float dt);
 static void Level1SceneExit(void);
 static void Level1SceneUnload(void);
 static void Level1SceneRender(void);
-
-
+static void Level1SceneSetMonkeyState(Entity* entity, Monkeystates newState);
+static void Level1SceneBounceController(Entity* entity);
+static bool Level1SceneIsColliding(const Entity* entityA, const Entity* entityB);
 
 
 
@@ -144,7 +148,7 @@ const Scene* Level1SceneGetInstance(void)
 static void Level1SceneLoad(void)
 {
 	Stream streamFile = StreamOpen("Data/Level1_Lives.txt");
-	if (&streamFile)
+	if (streamFile)
 	{
 		instance.numLives = StreamReadInt(streamFile);
 		StreamClose(&streamFile);
@@ -161,14 +165,14 @@ static void Level1SceneLoad(void)
 	monkeySpriteSourceIdle = SpriteSourceCreate();
 	SpriteSourceLoadTexture(monkeySpriteSourceIdle, 1, 1, "MonkeyIdle.png");
 	monkeySpriteSourceWalk = SpriteSourceCreate();
-	SpriteSourceLoadTexture(monkeySpriteSourceWalk, 1, 1, "MonkeyJump.png");
+	SpriteSourceLoadTexture(monkeySpriteSourceWalk, 1, 1, "MonkeyWalk.png");
 	monkeySpriteSourceJump = SpriteSourceCreate();
-	SpriteSourceLoadTexture(monkeySpriteSourceJump, 3, 3, "MonkeyWalk.png");
+	SpriteSourceLoadTexture(monkeySpriteSourceJump, 3, 3, "MonkeyJump.png");
 
 	
 
-	MeshBuildQuad(textMesh, 0.5f, 0.5f, 1.0f, 1.0f, "Mesh16x8");
 	textMesh = MeshCreate();
+	MeshBuildQuad(textMesh, 0.5f, 0.5f, 1.0f, 1.0f, "Mesh16x8");
 	textSpriteSource = SpriteSourceCreate();
 	SpriteSourceLoadTexture(textSpriteSource, 16, 8, "Roboto_Mono_black.png");
 
@@ -180,16 +184,31 @@ static void Level1SceneLoad(void)
 static void Level1SceneInit(void)
 {
 
-
-	createdEntity = EntityFactoryBuild("./Data/PlanetJump.txt");
+	livesTextEntity = EntityFactoryBuild("./Data/MonkeyLivesText.txt");
+	createdEntity = EntityFactoryBuild("./Data/PlanetBounce.txt");
+	monkeyEntity = EntityFactoryBuild("./Data/Monkey.txt");
 	if (createdEntity)
 	{	
 		SpriteSetMesh(EntityGetSprite(createdEntity), createdMesh);
 		SpriteSetSpriteSource(EntityGetSprite(createdEntity), createdSpriteSource);
 		SpriteSetFrame(EntityGetSprite(createdEntity), 0);
-		DGL_Graphics_SetBackgroundColor(& (DGL_Color){ 1,1,1,1 });
-		DGL_Graphics_SetBlendMode(DGL_BM_BLEND);
 	}
+	if (monkeyEntity)
+	{
+		monkeyState = MonkeyInvalid;
+		Level1SceneSetMonkeyState(monkeyEntity, MonkeyIdle);
+	}
+	if (livesTextEntity)
+	{
+	   textSprite = EntityGetSprite(livesTextEntity);
+	   SpriteSetMesh(textSprite, textMesh);
+	   SpriteSetSpriteSource(textSprite, textSpriteSource);
+	   sprintf_s(livesBuffer,sizeof(livesBuffer),"Lives: %d",instance.numLives);
+	   SpriteSetText(textSprite, livesBuffer);
+	}
+
+	DGL_Graphics_SetBackgroundColor(&(DGL_Color) { 1, 1, 1, 1 });
+	DGL_Graphics_SetBlendMode(DGL_BM_BLEND);
 }
 
 
@@ -199,9 +218,28 @@ static void Level1SceneInit(void)
 static void Level1SceneUpdate(float dt)
 {
 
-	Level1SceneMovementController(createdEntity);
+	Level1SceneMovementController(monkeyEntity);
+	Level1SceneBounceController(createdEntity);
 	EntityUpdate(createdEntity, dt);
+	EntityUpdate(monkeyEntity, dt);
+	
+	if (Level1SceneIsColliding(monkeyEntity, createdEntity))
+	{
+		instance.numLives--;
 
+		if (instance.numLives <= 0)
+		{
+
+			SceneSystemSetNext(level2SceneGetInstance());
+		}
+		else
+		{
+		   
+			SceneSystemRestart();
+		
+		}
+
+	}
 	if (DGL_Input_KeyTriggered('1'))
 	{
 
@@ -232,6 +270,8 @@ static void Level1SceneUpdate(float dt)
 void Level1SceneRender(void)
 {
 	EntityRender(createdEntity);
+	EntityRender(monkeyEntity);
+	EntityRender(livesTextEntity);
 
 }
 
@@ -240,6 +280,8 @@ static void Level1SceneExit(void)
 {
 	
 	EntityFree(&createdEntity);
+	EntityFree(&monkeyEntity);
+	EntityFree(&livesTextEntity);
 	
 
 }
@@ -247,9 +289,14 @@ static void Level1SceneExit(void)
 // Unload any resources used by the scene.
 static void Level1SceneUnload(void)
 {
-
+	SpriteSourceFree(&monkeySpriteSourceIdle);
+	SpriteSourceFree(&monkeySpriteSourceJump);
+	SpriteSourceFree(&monkeySpriteSourceWalk);
 	SpriteSourceFree(&createdSpriteSource);
+	SpriteSourceFree(&textSpriteSource);
 	MeshFree(&createdMesh);
+	MeshFree(&monkeyMesh);
+	MeshFree(&textMesh);
 
 }
 
@@ -266,17 +313,30 @@ static void Level1SceneMovementController(Entity *entity)
 		if (DGL_Input_KeyDown(VK_LEFT))
 		{
 			velocity.x = -moveVelocity;
+			if (monkeyState != MonkeyJump)
+			{
+				Level1SceneSetMonkeyState(entity, MonkeyWalk);
+			}
 		}
 		else if (DGL_Input_KeyDown(VK_RIGHT))
 		{
 			velocity.x = moveVelocity;
+			if (monkeyState != MonkeyJump)
+			{
+				Level1SceneSetMonkeyState(entity, MonkeyWalk);
+			}
 		}
 		else
 		{
 			velocity.x = 0;
+			if (monkeyState != MonkeyJump)
+			{
+				Level1SceneSetMonkeyState(entity, MonkeyIdle);
+			}
 		}
 		if (DGL_Input_KeyTriggered(VK_UP))
 		{
+			Level1SceneSetMonkeyState(entity, MonkeyJump);
 			velocity.y = jumpVelocity;
 			PhysicsSetAcceleration(EntityGetPhysics(entity), &gravityNormal);
 			
@@ -287,17 +347,94 @@ static void Level1SceneMovementController(Entity *entity)
 			TransformSetTranslation(EntityGetTransform(entity), &translation);
 			velocity.y = 0;
 			PhysicsSetAcceleration(EntityGetPhysics(entity), &gravityNone);
-			instance.numLives--;
-			if (instance.numLives <= 0)
-			{
-				SceneSystemSetNext(level2SceneGetInstance());
-			}
+			Level1SceneSetMonkeyState(entity, MonkeyIdle);	
 		}
 	    PhysicsSetVelocity(EntityGetPhysics(entity),&velocity);
 	}
 
 }
 
+static void Level1SceneSetMonkeyState(Entity* entity, Monkeystates newState)
+{
+	Sprite* monkeySpriteLocal = EntityGetSprite(entity);
+	Animation* monkeyAnimationComponent = EntityGetAnimation(entity);
+
+
+	if (monkeyState != (Monkeystates)newState)
+	{
+		monkeyState = newState;
+		switch (newState)
+		{
+		    case MonkeyIdle:
+			SpriteSetMesh(monkeySpriteLocal, createdMesh);
+			SpriteSetSpriteSource(monkeySpriteLocal, monkeySpriteSourceIdle);
+			AnimationPlay(monkeyAnimationComponent, 1, 0.0f, false);
+			break;
+	     	case MonkeyWalk:
+			SpriteSetMesh(monkeySpriteLocal, monkeyMesh);
+			SpriteSetSpriteSource(monkeySpriteLocal, monkeySpriteSourceWalk);
+			AnimationPlay(monkeyAnimationComponent, 8, 0.05f, true);
+			break;
+		    case MonkeyJump:
+			SpriteSetMesh(monkeySpriteLocal, createdMesh);
+			SpriteSetSpriteSource(monkeySpriteLocal, monkeySpriteSourceJump);
+			AnimationPlay(monkeyAnimationComponent, 1, 0.0f, false);
+			break;
+		}
+		
+	}
+}
+
+
+
+
+
+
+static void Level1SceneBounceController(Entity* entity)
+{
+	Physics *entityPhysics = EntityGetPhysics(entity);
+	Transform* entityTransform = EntityGetTransform(entity);
+	Vector2D position = *TransformGetTranslation(entityTransform);
+	Vector2D velocity = *PhysicsGetVelocity(entityPhysics);
+
+	if (entityPhysics && entityTransform)	
+	{
+		if (position.x <= -wallDistance)
+		{
+			position.x = -wallDistance;
+			velocity.x = -velocity.x;
+		}
+		else if (position.x >= wallDistance)
+		{
+			position.x = wallDistance;
+			velocity.x = -velocity.x;
+		}
+		if (position.y <= groundHeight)
+		{
+			position.y = groundHeight + (groundHeight - position.y);
+			velocity.y = -velocity.y;
+		}
+
+		PhysicsSetVelocity(entityPhysics,&velocity);
+		TransformSetTranslation(entityTransform, &position);
+	}
+
+}
+static bool Level1SceneIsColliding(const Entity* entityA, const Entity* entityB)
+{
+	Vector2D entityPositionA = *TransformGetTranslation(EntityGetTransform(entityA));
+	Vector2D entityPositionB = *TransformGetTranslation(EntityGetTransform(entityB));
+
+
+	if (Vector2DSquareDistance(&entityPositionA, &entityPositionB) <= CheckSquareDistance)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 
 

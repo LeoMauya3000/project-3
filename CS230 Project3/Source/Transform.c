@@ -137,6 +137,7 @@ const Vector2D* TransformGetTranslation(const Transform* transform)
 	if (transform)
 	{
 		return &(transform->translation);
+		
 	}
 	return NULL;
 }
@@ -153,6 +154,7 @@ float TransformGetRotation(const Transform* transform)
 	// Verify that a valid transform was specified.
 	if (transform)
 	{
+		  
 		return transform->rotation;
 	}
 	return 0;
@@ -171,6 +173,7 @@ const Vector2D* TransformGetScale(const Transform* transform)
 	if (transform)
 	{
 		return &(transform->scale);
+
 	}
 	return NULL;
 }
@@ -188,6 +191,7 @@ void TransformSetTranslation(Transform* transform, const Vector2D* translation)
 	if (transform)
 	{
 		transform->translation = *translation;
+		transform->isDirty = true;
 	}
 	
 }
@@ -202,6 +206,7 @@ void TransformSetRotation(Transform* transform, float rotation)
 	if (transform)
 	{
 		transform->rotation = rotation;
+		transform->isDirty = true;
 	}
 }
 
@@ -215,6 +220,7 @@ void TransformSetScale(Transform* transform, const Vector2D * scale)
 	if (transform)
 	{
 		transform->scale = *scale;
+		transform->isDirty = true;
 	}
 }
 const Matrix2D* TransformGetMatrix(Transform* transform)
@@ -226,6 +232,7 @@ const Matrix2D* TransformGetMatrix(Transform* transform)
 	Matrix2DIdentity(&result1);
 	Matrix2DIdentity(&rotaionMatrix);
 	Matrix2DIdentity(&scaleMatrix);
+	Matrix2DIdentity(&translationMatrix);
 
 
 	if (transform)

@@ -142,9 +142,15 @@ void Matrix2DMultVec(Vector2D* pResult, const Matrix2D* pMtx, const Vector2D* pV
 {
 	if (pResult && pMtx && pVec)
 	{
-		pResult->x = ((pMtx->m[0][0] * pVec->x) + (pMtx->m[0][1] * pVec->y) + (pMtx->m[0][2] * 0) + (pMtx->m[0][3] * 1));
-		pResult->y = ((pMtx->m[0][0] * pVec->x) + (pMtx->m[0][1] * pVec->y) + (pMtx->m[0][2] * 0) + (pMtx->m[0][3] * 1));
-		
+		pResult->x =
+			(pMtx->m[0][0] * pVec->x) +
+			(pMtx->m[0][1] * pVec->y) +
+			(pMtx->m[0][3] * 1.0f);
+
+		pResult->y =
+			(pMtx->m[1][0] * pVec->x) +
+			(pMtx->m[1][1] * pVec->y) +
+			(pMtx->m[1][3] * 1.0f);
 	}
 }
 

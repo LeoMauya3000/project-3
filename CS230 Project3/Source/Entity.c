@@ -49,6 +49,8 @@ typedef struct Entity
 	// Pointer to an attached transform component.
 	Transform* transform;
 
+	Animation* animation;
+
 } Entity;
 
 
@@ -189,6 +191,31 @@ void EntityRender(Entity* entity)
 	if (entity)
 	{
 		SpriteRender(entity->sprite, entity->transform);
+	}
+}
+
+
+void EntityAddAnimation(Entity* entity, Animation* animation)
+{
+	if (entity && animation)
+	{
+		entity->animation = animation;
+	}
+}
+
+
+
+
+Animation* EntityGetAnimation(const Entity* entity)
+{
+	if (entity)
+	{
+		Animation* entityAnimation = entity->animation;
+		return entityAnimation;
+	}
+	else
+	{
+		return NULL;
 	}
 }
 
