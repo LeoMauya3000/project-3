@@ -18,6 +18,7 @@
 #include "Transform.h"
 #include "Trace.h"
 #include "Matrix2D.h"
+#include <math.h>
 //------------------------------------------------------------------------------
 // Private Constants:
 //------------------------------------------------------------------------------
@@ -90,17 +91,20 @@ void SpriteRender(const Sprite* sprite, Transform* transform)
 	const Matrix2D *matrix = TransformGetMatrix(transform);
 	matrix;
 	const Vector2D* translate = &(Vector2D){matrix->m[0][3],matrix->m[1][3]};
-	const Vector2D* scale = &(Vector2D) { matrix->m[0][0], matrix->m[1][1] };
-	float rotation = 0;
-
-	/*
-	printf("\n\n(%f,%f)\n", TransformGetTranslation(transform)->x, TransformGetTranslation(transform)->y);
-	printf("(%f,%f)\n", TransformGetScale(transform)->x, TransformGetScale(transform)->y);
-	printf("%f", rotation);
-	*/
+	//&(Vector2D) { matrix->m[0][0], matrix->m[1][1] };
+	float x = sqrtf(powf(matrix->m[0][0], 2) + powf(matrix->m[1][0], 2) + powf(matrix->m[2][0],2));
+	float y = sqrtf(powf(matrix->m[0][1], 2) + powf(matrix->m[1][1], 2) + powf(matrix->m[2][1],2));
+	const Vector2D* scale = &(Vector2D){x,y};
+	//float rotation = )
+	//float magnitude = sqrtf(powf(matrix->m[0][0], 2) + powf(matrix->m[0][1], 2) + powf(matrix->m[0][3], 2) / scale->x);
+	
+	//printf("\n\n(%f,%f)\n", TransformGetTranslation(transform)->x, TransformGetTranslation(transform)->y);
+	//printf("(%f,%f)\n", TransformGetScale(transform)->x, TransformGetScale(transform)->y);
+	
+	
 	//Matrix2DTranslate(matrix,translate->x,translate->y);
 
-
+	//printf("%f",TransformGetRotation(transform));
 	if (sprite->spriteSource != NULL)
 	{
 		DGL_Graphics_SetShaderMode(DGL_PSM_TEXTURE, DGL_VSM_DEFAULT);	
@@ -113,7 +117,7 @@ void SpriteRender(const Sprite* sprite, Transform* transform)
 		DGL_Graphics_SetShaderMode(DGL_PSM_COLOR, DGL_VSM_DEFAULT);
 	}
 
-	DGL_Graphics_SetCB_TransformData(translate, scale, rotation);
+	DGL_Graphics_SetCB_TransformData(translate, scale, scale->x);
 	DGL_Graphics_SetCB_Alpha(sprite->alpha);
 	DGL_Graphics_SetCB_TintColor(&(DGL_Color) { 0.0f, 0.0f, 0.0f, 0.0f });
 	MeshRender(sprite->mesh);

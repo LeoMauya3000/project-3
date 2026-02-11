@@ -223,6 +223,10 @@ const Matrix2D* TransformGetMatrix(Transform* transform)
 	Matrix2D rotaionMatrix;
 	Matrix2D scaleMatrix;
 	Matrix2D translationMatrix;
+	Matrix2DIdentity(&result1);
+	Matrix2DIdentity(&rotaionMatrix);
+	Matrix2DIdentity(&scaleMatrix);
+
 
 	if (transform)
 	{
