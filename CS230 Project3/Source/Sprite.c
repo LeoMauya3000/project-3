@@ -40,6 +40,9 @@ typedef struct Sprite
 	// The mesh used to draw the sprite.
 	const Mesh* mesh;
 
+	// Zero-terminated string used to display sprite text.
+	const char* text;
+
 } Sprite;
 
 
@@ -88,23 +91,8 @@ void SpriteRead(Sprite* sprite, Stream stream)
 }
 void SpriteRender(const Sprite* sprite, Transform* transform)
 {
-	const Matrix2D *matrix = TransformGetMatrix(transform);
-	matrix;
-	const Vector2D* translate = &(Vector2D){matrix->m[0][3],matrix->m[1][3]};
-	//&(Vector2D) { matrix->m[0][0], matrix->m[1][1] };
-	float x = sqrtf(powf(matrix->m[0][0], 2) + powf(matrix->m[1][0], 2) + powf(matrix->m[2][0],2));
-	float y = sqrtf(powf(matrix->m[0][1], 2) + powf(matrix->m[1][1], 2) + powf(matrix->m[2][1],2));
-	const Vector2D* scale = &(Vector2D){x,y};
-	//float rotation = )
-	//float magnitude = sqrtf(powf(matrix->m[0][0], 2) + powf(matrix->m[0][1], 2) + powf(matrix->m[0][3], 2) / scale->x);
-	
-	//printf("\n\n(%f,%f)\n", TransformGetTranslation(transform)->x, TransformGetTranslation(transform)->y);
-	//printf("(%f,%f)\n", TransformGetScale(transform)->x, TransformGetScale(transform)->y);
-	
-	
-	//Matrix2DTranslate(matrix,translate->x,translate->y);
+	 Matrix2D matrix = *TransformGetMatrix(transform);
 
-	//printf("%f",TransformGetRotation(transform));
 	if (sprite->spriteSource != NULL)
 	{
 		DGL_Graphics_SetShaderMode(DGL_PSM_TEXTURE, DGL_VSM_DEFAULT);	
@@ -117,9 +105,38 @@ void SpriteRender(const Sprite* sprite, Transform* transform)
 		DGL_Graphics_SetShaderMode(DGL_PSM_COLOR, DGL_VSM_DEFAULT);
 	}
 
-	DGL_Graphics_SetCB_TransformData(translate, scale, scale->x);
+	DGL_Graphics_SetCB_TransformMatrix(&matrix);
 	DGL_Graphics_SetCB_Alpha(sprite->alpha);
 	DGL_Graphics_SetCB_TintColor(&(DGL_Color) { 0.0f, 0.0f, 0.0f, 0.0f });
+	if (sprite->text == NULL)
+	{
+
+		matrix = *TransformGetMatrix(transform);
+		DGL_Graphics_SetCB_TransformMatrix(&matrix);
+		MeshRender(sprite->mesh);
+	}
+	else
+	{
+		unsigned int characterIndex = 0;
+		const char* character = sprite->text;
+		Matrix2D localMatrix = *TransformGetMatrix(transform);
+		Matrix2DTranslate(&localMatrix, localMatrix.m[0][3], 0);
+		while (character != '\0')
+		{
+			characterIndex = *character - 'a';
+
+			if (*character == ' ')
+			{
+				characterIndex = 0;
+			}
+			character++;
+			SpriteSourceSetTextureOffset(sprite->spriteSource, characterIndex);
+			DGL_Graphics_SetCB_TransformMatrix(&localMatrix);
+			MeshRender(sprite->mesh);
+			Matrix2DConcat(&matrix, &localMatrix, &matrix);
+
+		}
+	}
 	MeshRender(sprite->mesh);
 }
 float SpriteGetAlpha(const Sprite* sprite)
@@ -167,6 +184,11 @@ void SpriteSetSpriteSource(Sprite* sprite, const SpriteSource* spriteSource)
 }
 void SpriteSetText(Sprite* sprite, const char* text)
 {
+
+
+
+
+
 	sprite;
 	text;
 }

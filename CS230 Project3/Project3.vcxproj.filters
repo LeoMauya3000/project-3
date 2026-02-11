@@ -104,13 +104,7 @@
     <ClCompile Include="Source\Physics.c">
       <Filter>Engine\Entities\Components\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Sprite.c">
-      <Filter>Engine\Entities\Components\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SpriteSource.c">
-      <Filter>Engine\Entities\Components\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Mesh.c">
       <Filter>Engine\Entities\Components\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\EntityFactory.c">
@@ -124,6 +118,12 @@
     </ClCompile>
     <ClCompile Include="Source\CheatSystem.c">
       <Filter>Game\Systems\Cheat</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Sprite.c">
+      <Filter>Engine\Entities\Components\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mesh.c">
+      <Filter>Engine\Entities\Components\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -193,9 +193,6 @@
     <ClInclude Include="Source\SpriteSource.h">
       <Filter>Engine\Entities\Components\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Mesh.h">
-      <Filter>Engine\Entities\Components\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Source\EntityFactory.h">
       <Filter>Engine\Entities</Filter>
     </ClInclude>
@@ -207,6 +204,15 @@
     </ClInclude>
     <ClInclude Include="Source\CheatSystem.h">
       <Filter>Game\Systems\Cheat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\project-platinum_platformers\DGL Sample Engine\DGL Sample Engine\SceneTemplate.h">
+      <Filter>Engine\Entities\Components\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\project-platinum_platformers\DGL Sample Engine\DGL Sample Engine\targetver.h">
+      <Filter>Engine\Entities\Components\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mesh.h">
+      <Filter>Engine\Entities\Components\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

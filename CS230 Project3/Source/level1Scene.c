@@ -30,7 +30,16 @@
 
 //------------------------------------------------------------------------------
 // Private Constants:
+//
 //------------------------------------------------------------------------------
+ enum Monkeystates
+{
+	MonkeyInvalid = -1,
+	MonkeyIdle,
+	MonkeyWalk,
+	MonkeyJump
+
+};
 	static const float groundHeight = -150.0f;
 	static const float moveVelocity = 500.0f;
 	static const float jumpVelocity = 1000.0f;
@@ -50,16 +59,31 @@ typedef struct Level1Scene
 	Scene	base;
 	int numLives;
 
+
 	// Add any scene-specific variables second.
 
 } Level1Scene;
+ static char livesBuffer[16];
+ enum MonkeyStates monkeyState = MonkeyInvalid;
+ static Mesh* createdMesh;
+ static SpriteSource* createdSpriteSource;
+ static Entity* createdEntity;
+ static Sprite* createdSpirte;
+ static const float wallDistance = 462.0f;
+ static const float CheckSquareDistance = (75.0f * 75.0f);
 
- Mesh* createdMesh;
- SpriteSource* createdSpriteSource;
- Entity* createdEntity;
- Sprite* createdSpirte;
+ static Entity* monkeyEntity;
+ static Mesh* monkeyMesh;
+ static Sprite* monkeySprite;
+ static SpriteSource* monkeySpriteSourceIdle;
+ static SpriteSource* monkeySpriteSourceWalk;
+ static SpriteSource* monkeySpriteSourceJump;
 
-
+ static Entity* livesTextEntity;
+ static Mesh* textMesh;
+ static Sprite* textSprite;
+ static SpriteSource* textSpriteSource;
+ 
 
 
 //------------------------------------------------------------------------------
@@ -132,6 +156,21 @@ static void Level1SceneLoad(void)
 	SpriteSourceLoadTexture(createdSpriteSource, 1, 1, "PlanetTexture.png");
 	
 	
+	monkeyMesh = MeshCreate();
+	MeshBuildQuad(monkeyMesh, 0.5, 0.5, 1.0f / 3, 1.0f / 3, "Mesh3x3");
+	monkeySpriteSourceIdle = SpriteSourceCreate();
+	SpriteSourceLoadTexture(monkeySpriteSourceIdle, 1, 1, "MonkeyIdle.png");
+	monkeySpriteSourceWalk = SpriteSourceCreate();
+	SpriteSourceLoadTexture(monkeySpriteSourceWalk, 1, 1, "MonkeyJump.png");
+	monkeySpriteSourceJump = SpriteSourceCreate();
+	SpriteSourceLoadTexture(monkeySpriteSourceJump, 3, 3, "MonkeyWalk.png");
+
+	
+
+	MeshBuildQuad(textMesh, 0.5f, 0.5f, 1.0f, 1.0f, "Mesh16x8");
+	textMesh = MeshCreate();
+	textSpriteSource = SpriteSourceCreate();
+	SpriteSourceLoadTexture(textSpriteSource, 16, 8, "Roboto_Mono_black.png");
 
 
 	
@@ -144,17 +183,13 @@ static void Level1SceneInit(void)
 
 	createdEntity = EntityFactoryBuild("./Data/PlanetJump.txt");
 	if (createdEntity)
-	{
-		
+	{	
 		SpriteSetMesh(EntityGetSprite(createdEntity), createdMesh);
 		SpriteSetSpriteSource(EntityGetSprite(createdEntity), createdSpriteSource);
 		SpriteSetFrame(EntityGetSprite(createdEntity), 0);
 		DGL_Graphics_SetBackgroundColor(& (DGL_Color){ 1,1,1,1 });
 		DGL_Graphics_SetBlendMode(DGL_BM_BLEND);
 	}
-	 
- 
-
 }
 
 

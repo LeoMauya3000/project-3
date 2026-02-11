@@ -205,6 +205,8 @@
     <ClCompile Include="Source\Vector2D.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\project-platinum_platformers\DGL Sample Engine\DGL Sample Engine\SceneTemplate.h" />
+    <ClInclude Include="..\..\project-platinum_platformers\DGL Sample Engine\DGL Sample Engine\targetver.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\CheatSystem.h" />
     <ClInclude Include="Source\Engine.h" />
