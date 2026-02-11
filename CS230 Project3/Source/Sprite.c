@@ -119,25 +119,22 @@ void SpriteRender(const Sprite* sprite, Transform* transform)
 	else
 	{
 		int characterIndex = 0;
-		int num = 'a';
 		const char* character = sprite->text;
-		Matrix2D localMatrix = *TransformGetMatrix(transform);
-		Matrix2DTranslate(&localMatrix, localMatrix.m[0][3], 0);
-		while (character != '\0')
+		Matrix2D offset = *TransformGetMatrix(transform);
+		Matrix2DTranslate(&offset, matrix.m[0][0], 0);
+
+		while (*character != '\0')
 		{
-			characterIndex = 0;
-			if (*character == ' ')
-			{
-				return;
-
-			}
-			characterIndex = *character - num;
+			characterIndex = 0; 
+			characterIndex = (int)(*character);
+			characterIndex -= ' ';
 			character++;
+		
 			SpriteSourceSetTextureOffset(sprite->spriteSource, characterIndex);
-			DGL_Graphics_SetCB_TransformMatrix(&localMatrix);
 			MeshRender(sprite->mesh);
-			Matrix2DConcat(&matrix, &localMatrix, &matrix);
-
+			Matrix2DConcat(&matrix, &offset, &matrix);
+			DGL_Graphics_SetCB_TransformMatrix(&matrix);
+			MeshRender(sprite->mesh);
 		}
 	}
 

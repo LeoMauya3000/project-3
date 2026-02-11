@@ -222,14 +222,13 @@ static void Level1SceneUpdate(float dt)
 	Level1SceneBounceController(createdEntity);
 	EntityUpdate(createdEntity, dt);
 	EntityUpdate(monkeyEntity, dt);
-	
+	EntityUpdate(livesTextEntity, dt);
 	if (Level1SceneIsColliding(monkeyEntity, createdEntity))
 	{
 		instance.numLives--;
 
 		if (instance.numLives <= 0)
 		{
-
 			SceneSystemSetNext(level2SceneGetInstance());
 		}
 		else
