@@ -12,10 +12,10 @@
 #include "stdafx.h"
 
 #include "DGL.h"
-
 #include "Stream.h"
 #include "Transform.h"
 #include "Vector2D.h"
+#include "Matrix2D.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -33,11 +33,21 @@ typedef struct Transform
 	Vector2D	translation;
 
 	// The rotation (or orientation) of an entity (in radians).
-	float		rotation;
+	float	rotation;
 
 	// The scale (or size) of an entity.
 	// (Hint: This should be initialized to (1, 1).)
 	Vector2D	scale;
+
+	// True if the transformation matrix needs to be recalculated.
+	// (Hint: This should be initialized to true.)
+	// (Hint: This should be set to true when the Transform data changes.)
+	bool	isDirty;
+
+	// The transformation matrix resulting from concatenating the matrices
+	//   representing the translation, rotation, and scale transformations.
+	//	 (e.g. matrix = Translation*Rotation*Scale matrices)
+	Matrix2D	matrix;
 
 } Transform;
 
@@ -73,6 +83,7 @@ Transform* TransformCreate(void)
 	if (transform)
 	{
 		Vector2DSet(&transform->scale, 1.0f, 1.0f);
+		transform->isDirty = true;
 	}
 
 	// Return the allocated memory (NULL if unsuccessful).
@@ -171,10 +182,14 @@ const Vector2D* TransformGetScale(const Transform* transform)
 void TransformSetTranslation(Transform* transform, const Vector2D* translation)
 {
 	// Verify that a valid transform was specified.
+	
+	
+	
 	if (transform)
 	{
 		transform->translation = *translation;
 	}
+	
 }
 
 // Set the rotation of a Transform component.
@@ -200,6 +215,36 @@ void TransformSetScale(Transform* transform, const Vector2D * scale)
 	if (transform)
 	{
 		transform->scale = *scale;
+	}
+}
+const Matrix2D* TransformGetMatrix(Transform* transform)
+{
+	Matrix2D result1;
+	Matrix2D rotaionMatrix;
+	Matrix2D scaleMatrix;
+	Matrix2D translationMatrix;
+
+	if (transform)
+	{
+		if (transform->isDirty)
+		{
+			
+			Matrix2DScale(&scaleMatrix,transform->scale.x,transform->scale.y);
+			Matrix2DRotRad(&rotaionMatrix, transform->rotation);
+			Matrix2DTranslate(&translationMatrix, transform->translation.x, transform->translation.y);
+			Matrix2DConcat(&result1,&scaleMatrix,&rotaionMatrix);
+			Matrix2DConcat(&transform->matrix, &translationMatrix, &result1);
+			printf("[%f %f % f %f]\n", transform->matrix.m[0][0], transform->matrix.m[0][1], transform->matrix.m[0][2], transform->matrix.m[0][3]);
+			printf("[%f %f % f %f]\n", transform->matrix.m[1][0], transform->matrix.m[1][1], transform->matrix.m[1][2], transform->matrix.m[1][3]);
+			printf("[%f %f % f %f]\n", transform->matrix.m[2][0], transform->matrix.m[2][1], transform->matrix.m[2][2], transform->matrix.m[2][3]);
+			printf("[%f %f % f %f]\n", transform->matrix.m[3][0], transform->matrix.m[3][1], transform->matrix.m[3][2], transform->matrix.m[3][3]);
+			transform->isDirty = false;
+		}
+		return &transform->matrix;
+	}
+	else
+	{
+		return NULL;
 	}
 }
 

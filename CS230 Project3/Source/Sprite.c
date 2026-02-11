@@ -17,6 +17,7 @@
 #include "Mesh.h"
 #include "Transform.h"
 #include "Trace.h"
+#include "Matrix2D.h"
 //------------------------------------------------------------------------------
 // Private Constants:
 //------------------------------------------------------------------------------
@@ -86,14 +87,23 @@ void SpriteRead(Sprite* sprite, Stream stream)
 }
 void SpriteRender(const Sprite* sprite, Transform* transform)
 {
-	const Vector2D* translate = TransformGetTranslation(transform);
-	const Vector2D* scale = TransformGetScale(transform);
-	float rotation = TransformGetRotation(transform);
+	const Matrix2D *matrix = TransformGetMatrix(transform);
+	matrix;
+	const Vector2D* translate = &(Vector2D){matrix->m[0][3],matrix->m[1][3]};
+	const Vector2D* scale = &(Vector2D) { matrix->m[0][0], matrix->m[1][1] };
+	float rotation = 0;
+
+	/*
+	printf("\n\n(%f,%f)\n", TransformGetTranslation(transform)->x, TransformGetTranslation(transform)->y);
+	printf("(%f,%f)\n", TransformGetScale(transform)->x, TransformGetScale(transform)->y);
+	printf("%f", rotation);
+	*/
+	//Matrix2DTranslate(matrix,translate->x,translate->y);
 
 
 	if (sprite->spriteSource != NULL)
 	{
-		DGL_Graphics_SetShaderMode(DGL_PSM_TEXTURE, DGL_VSM_DEFAULT);
+		DGL_Graphics_SetShaderMode(DGL_PSM_TEXTURE, DGL_VSM_DEFAULT);	
 		SpriteSourceSetTexture(sprite->spriteSource);
 		SpriteSourceSetTextureOffset(sprite->spriteSource, sprite->frameIndex);	
 
@@ -150,5 +160,10 @@ void SpriteSetMesh(Sprite* sprite, const Mesh* mesh)
 void SpriteSetSpriteSource(Sprite* sprite, const SpriteSource* spriteSource)
 {
 	sprite->spriteSource = spriteSource;
+}
+void SpriteSetText(Sprite* sprite, const char* text)
+{
+	sprite;
+	text;
 }
 

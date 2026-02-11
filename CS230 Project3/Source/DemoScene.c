@@ -17,6 +17,8 @@
 #include "DemoScene.h"
 #include "Scene.h"
 #include "SceneSystem.h"
+#include "Matrix2D.h"
+#include "Transform.h"
 
 //------------------------------------------------------------------------------
 // Private Structures:
@@ -72,11 +74,12 @@ static DGL_Vec2 posCamera = { 0, 0 };
 static DGL_Vec2 posSpaceship = { 0.f, 0.f };
 
 static DGL_Vec2 uvOffset = { 0.f, 0.f };
-
+static DGL_Mat4 *matrix0;
+static Matrix2D *matrix;
 static float alpha = 1.0f;
 static float rotation = 0.0f;
 static DGL_Vec2 startPos = { 0.f, 0.f };
-
+static Matrix2D * matrix1;
 static void DemoSceneLoad(void);
 static void DemoSceneInit(void);
 static void DemoSceneUpdate(float dt);
@@ -92,7 +95,8 @@ static DGL_Mesh* meshLine = NULL;
 
 static DGL_Texture* textureBall = NULL;
 static DGL_Texture* textureSquare = NULL;
-
+static Transform* transform = NULL;
+static const Matrix2D* matrixboy;
 //------------------------------------------------------------------------------
 // Instance Variable:
 //------------------------------------------------------------------------------
@@ -176,6 +180,8 @@ static void DemoSceneLoad(void)
 
 	// TODO: Load/Create Textures:
 
+	transform = TransformCreate();
+	matrixboy = TransformGetMatrix(transform);
 
 
 }
@@ -351,6 +357,7 @@ void DemoSceneRender(void)
 // Free any objects associated with the scene.
 static void DemoSceneExit()
 {
+	
 }
 
 // Unload any resources used by the scene.
