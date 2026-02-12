@@ -164,8 +164,12 @@ void SpriteSetAlpha(Sprite* sprite, float alpha)
 }
 void SpriteSetFrame(Sprite* sprite, unsigned int frameIndex)
 {
-	if (frameIndex <= sprite->frameIndex - 1)
+	//unsigned int maxFrameCount = SpriteSourceGetFrameCount(sprite->spriteSource);
+
+	if (frameIndex <= sprite->frameIndex - 1 && frameIndex >= 0)
 	{
+
+
 		sprite->frameIndex = frameIndex;
 	}
 

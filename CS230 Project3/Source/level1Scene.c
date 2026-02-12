@@ -165,9 +165,9 @@ static void Level1SceneLoad(void)
 	monkeySpriteSourceIdle = SpriteSourceCreate();
 	SpriteSourceLoadTexture(monkeySpriteSourceIdle, 1, 1, "MonkeyIdle.png");
 	monkeySpriteSourceWalk = SpriteSourceCreate();
-	SpriteSourceLoadTexture(monkeySpriteSourceWalk, 1, 1, "MonkeyWalk.png");
+	SpriteSourceLoadTexture(monkeySpriteSourceWalk, 3, 3, "MonkeyWalk.png");
 	monkeySpriteSourceJump = SpriteSourceCreate();
-	SpriteSourceLoadTexture(monkeySpriteSourceJump, 3, 3, "MonkeyJump.png");
+	SpriteSourceLoadTexture(monkeySpriteSourceJump, 1, 1, "MonkeyJump.png");
 
 	
 
@@ -223,6 +223,7 @@ static void Level1SceneUpdate(float dt)
 	EntityUpdate(createdEntity, dt);
 	EntityUpdate(monkeyEntity, dt);
 	EntityUpdate(livesTextEntity, dt);
+
 	if (Level1SceneIsColliding(monkeyEntity, createdEntity))
 	{
 		instance.numLives--;
@@ -312,7 +313,7 @@ static void Level1SceneMovementController(Entity *entity)
 		if (DGL_Input_KeyDown(VK_LEFT))
 		{
 			velocity.x = -moveVelocity;
-			if (monkeyState != MonkeyJump)
+			if (monkeyState != MonkeyJump && monkeyState != MonkeyWalk)
 			{
 				Level1SceneSetMonkeyState(entity, MonkeyWalk);
 			}
@@ -320,7 +321,7 @@ static void Level1SceneMovementController(Entity *entity)
 		else if (DGL_Input_KeyDown(VK_RIGHT))
 		{
 			velocity.x = moveVelocity;
-			if (monkeyState != MonkeyJump)
+			if (monkeyState != MonkeyJump && monkeyState != MonkeyWalk)
 			{
 				Level1SceneSetMonkeyState(entity, MonkeyWalk);
 			}
@@ -328,7 +329,7 @@ static void Level1SceneMovementController(Entity *entity)
 		else
 		{
 			velocity.x = 0;
-			if (monkeyState != MonkeyJump)
+			if (monkeyState != MonkeyJump && monkeyState != MonkeyIdle)
 			{
 				Level1SceneSetMonkeyState(entity, MonkeyIdle);
 			}
@@ -343,10 +344,13 @@ static void Level1SceneMovementController(Entity *entity)
 		if (translation.y < groundHeight)
 		{
 			translation.y = groundHeight;
+	
 			TransformSetTranslation(EntityGetTransform(entity), &translation);
 			velocity.y = 0;
 			PhysicsSetAcceleration(EntityGetPhysics(entity), &gravityNone);
 			Level1SceneSetMonkeyState(entity, MonkeyIdle);	
+
+		
 		}
 	    PhysicsSetVelocity(EntityGetPhysics(entity),&velocity);
 	}

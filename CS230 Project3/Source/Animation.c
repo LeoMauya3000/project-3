@@ -70,7 +70,8 @@ static void AdvanceFrame(Animation* animation);
 
 Animation* AnimationCreate(void)
 {
-	Animation* animationComponent = calloc(1, sizeof(Animation));
+	Animation* animationComponent = (Animation*)calloc(1, sizeof(Animation));
+	
 	return animationComponent;
 }
 
@@ -87,9 +88,11 @@ void AnimationRead(Animation* animation, Stream stream)
 
 
 	if (animation && stream)
-	{
-		animation->frameCount = StreamReadInt(stream);
+	{ 
+
 		animation->frameIndex = StreamReadInt(stream);
+
+		animation->frameCount = StreamReadInt(stream);
 		animation->frameDelay = StreamReadFloat(stream);
 		animation->frameDuration = StreamReadFloat(stream);
 		animation->isRunning = StreamReadBoolean(stream);
@@ -108,9 +111,14 @@ void AnimationPlay(Animation* animation, int frameCount, float frameDuration, bo
 {
 	if (animation)
 	{
+		printf("you played animation");
 		animation->frameCount = frameCount;
 		animation->frameDuration = frameDuration;
 		animation->isLooping = isLooping;
+		animation->isRunning = true;
+		animation->frameIndex = 0;
+		animation->frameDelay = frameDuration;
+		animation->isDone = false;
 		Sprite* entitySprite = EntityGetSprite(animation->parent);
 		SpriteSetFrame(entitySprite, animation->frameIndex);
 	}
@@ -125,17 +133,19 @@ void AnimationUpdate(Animation* animation, float dt)
 	if (animation)
 	{
 		animation->isDone = false;
+
 		if (animation->isRunning)
 		{
 			animation->frameDelay -= dt;
+
 			if (animation->frameDelay <= 0)
 			{
 				AdvanceFrame(animation);
 			}
-			else
-			{
-				return;
-			}
+		}
+		else
+		{
+			return;
 		}
 	}
 	else
@@ -145,14 +155,12 @@ void AnimationUpdate(Animation* animation, float dt)
 }
 bool AnimationIsDone(const Animation* animation)
 {
-	if (animation->frameIndex >= animation->frameCount - 1)
+	if (animation)
 	{
-		return true;
+		return animation->isDone;
 	}
-	else
-	{
+
 		return false;
-	}	
 }
 
 
@@ -164,48 +172,58 @@ bool AnimationIsDone(const Animation* animation)
 
 static void AdvanceFrame(Animation* animation)
 {
-	Sprite* entitySprite = EntityGetSprite(animation->parent);
 	if (animation)
 	{
+	    Sprite* entitySprite = EntityGetSprite(animation->parent);
 		animation->frameIndex++;
+		
 		if (animation->frameIndex >= animation->frameCount)
 		{
 
 			if (animation->isLooping)
 			{
 				animation->frameIndex = 0;
-				animation->isDone = true;
-				if (animation->isRunning)
-				{
-					animation->frameDelay = 0;
-					return;
-				}
+				animation->isDone = true;	
+
 			}
 			else
 			{
 				animation->frameIndex = animation->frameCount - 1;
 				animation->isRunning = false;
 				animation->isDone = true;
-				if (animation->isRunning)
-				{
-					animation->frameDelay = 0;
-					return;
-				}
+			
 			}
+			if (animation->isRunning)
+			{
+				printf("%d", animation->frameIndex);
+				SpriteSetFrame(entitySprite, animation->frameIndex);
+	
+				animation->frameDelay += animation->frameDuration;
+				return;
+			}
+			else
+			{
 
-
-		}
-		if (animation->isRunning)
-		{
-			SpriteSetFrame(entitySprite, animation->frameIndex);
-			animation->frameDelay += animation->frameDuration;
-			return;
+				animation->frameDelay = 0;
+				return;
+			}
 		}
 		else
 		{
-			animation->frameDelay = 0;
-			return;
+			if (animation->isRunning)
+			{
+				SpriteSetFrame(entitySprite, animation->frameIndex);
+				animation->frameDelay += animation->frameDuration;
+				return;
+			}
+			else
+			{
+				animation->frameDelay = 0;
+				return;
+			}
 		}
+
+	
 	}
 	else
 	{

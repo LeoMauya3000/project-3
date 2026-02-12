@@ -113,7 +113,7 @@ bool StreamReadBoolean(Stream stream)
 		tokenBuffer[0] = 0;
 		fscanf_s(stream, "%s", tokenBuffer, (unsigned)_countof(tokenBuffer));
 
-		if (tokenBuffer)
+		if(strncmp(tokenBuffer, "0", _countof("0")))
 		{
 			return true;
 		}

@@ -118,8 +118,10 @@ void EntityRead(Entity* entity, Stream stream)
 			}
 			else if (!strncmp(token, "Animation", _countof("Animation")))
 			{
+
 				entity->animation = AnimationCreate();
 				AnimationRead(entity->animation, stream);
+				EntityAddAnimation(entity, entity->animation);
 			}
 			else if (strcmp(token, "") == 0)
 			{
@@ -189,6 +191,10 @@ void EntityUpdate(Entity* entity, float dt)
 	{
 		PhysicsUpdate(entity->physics, entity->transform, dt);
 	}
+	if (entity->animation)
+	{
+		AnimationUpdate(entity->animation, dt);
+	}
 
 	
 }
@@ -214,7 +220,7 @@ void EntityAddAnimation(Entity* entity, Animation* animation)
 
 
 Animation* EntityGetAnimation(const Entity* entity)
-{
+	{
 	if (entity)
 	{
 		Animation* entityAnimation = entity->animation;
