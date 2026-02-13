@@ -270,6 +270,8 @@ static void DemoSceneUpdate(float dt)
 			rotation = 0;
 
 		}
+
+		/*
 		if (DGL_Input_KeyDown('1'))
 		{
 			SceneSystemSetNext(Level1SceneGetInstance());
@@ -286,7 +288,7 @@ static void DemoSceneUpdate(float dt)
 		{
 			SceneSystemSetNext(DemoSceneGetInstance());
 		}
-
+		*/
 
 	}
 	DGL_Camera_SetPosition(&posCamera);

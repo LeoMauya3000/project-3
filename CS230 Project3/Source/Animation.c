@@ -91,7 +91,6 @@ void AnimationRead(Animation* animation, Stream stream)
 	{ 
 
 		animation->frameIndex = StreamReadInt(stream);
-
 		animation->frameCount = StreamReadInt(stream);
 		animation->frameDelay = StreamReadFloat(stream);
 		animation->frameDuration = StreamReadFloat(stream);
@@ -111,7 +110,6 @@ void AnimationPlay(Animation* animation, int frameCount, float frameDuration, bo
 {
 	if (animation)
 	{
-		printf("you played animation");
 		animation->frameCount = frameCount;
 		animation->frameDuration = frameDuration;
 		animation->isLooping = isLooping;
@@ -137,6 +135,7 @@ void AnimationUpdate(Animation* animation, float dt)
 		if (animation->isRunning)
 		{
 			animation->frameDelay -= dt;
+		
 
 			if (animation->frameDelay <= 0)
 			{
@@ -166,17 +165,15 @@ bool AnimationIsDone(const Animation* animation)
 
 
 
-//------------------------------------------------------------------------------
-// Private Functions:
-//------------------------------------------------------------------------------
+
 
 static void AdvanceFrame(Animation* animation)
 {
 	if (animation)
 	{
 	    Sprite* entitySprite = EntityGetSprite(animation->parent);
+	
 		animation->frameIndex++;
-		
 		if (animation->frameIndex >= animation->frameCount)
 		{
 
@@ -193,23 +190,7 @@ static void AdvanceFrame(Animation* animation)
 				animation->isDone = true;
 			
 			}
-			if (animation->isRunning)
-			{
-				printf("%d", animation->frameIndex);
-				SpriteSetFrame(entitySprite, animation->frameIndex);
-	
-				animation->frameDelay += animation->frameDuration;
-				return;
-			}
-			else
-			{
-
-				animation->frameDelay = 0;
-				return;
-			}
 		}
-		else
-		{
 			if (animation->isRunning)
 			{
 				SpriteSetFrame(entitySprite, animation->frameIndex);
@@ -221,12 +202,11 @@ static void AdvanceFrame(Animation* animation)
 				animation->frameDelay = 0;
 				return;
 			}
-		}
-
-	
+			
 	}
 	else
 	{
+
 		return;
 	}
 }

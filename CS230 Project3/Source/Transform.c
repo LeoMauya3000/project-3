@@ -239,19 +239,21 @@ const Matrix2D* TransformGetMatrix(Transform* transform)
 	{
 		if (transform->isDirty)
 		{
-			
 			Matrix2DScale(&scaleMatrix,transform->scale.x,transform->scale.y);
 			Matrix2DRotRad(&rotaionMatrix, transform->rotation);
 			Matrix2DTranslate(&translationMatrix, transform->translation.x, transform->translation.y);
 			Matrix2DConcat(&result1,&scaleMatrix,&rotaionMatrix);
 			Matrix2DConcat(&transform->matrix, &translationMatrix, &result1);
+		
 			/*
+			
 			printf("[%f %f % f %f]\n", transform->matrix.m[0][0], transform->matrix.m[0][1], transform->matrix.m[0][2], transform->matrix.m[0][3]);
 			printf("[%f %f % f %f]\n", transform->matrix.m[1][0], transform->matrix.m[1][1], transform->matrix.m[1][2], transform->matrix.m[1][3]);
-			printf("[%f %f % f %f]\n", transform->matrix.m[2][0], transform->matrix.m[2][1], transform->matrix.m[2][2], transform->matrix.m[2][3]);
+			printf("[%f %f % f %f]\n", transfor																																m->matrix.m[2][0], transform->matrix.m[2][1], transform->matrix.m[2][2], transform->matrix.m[2][3]);
 			printf("[%f %f % f %f]\n", transform->matrix.m[3][0], transform->matrix.m[3][1], transform->matrix.m[3][2], transform->matrix.m[3][3]);
 			transform->isDirty = false;
 			*/
+
 		}
 		return &transform->matrix;
 	}

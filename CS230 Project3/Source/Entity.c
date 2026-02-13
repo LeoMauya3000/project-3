@@ -95,6 +95,7 @@ void EntityRead(Entity* entity, Stream stream)
 {
 	const char* entityName;
 	const char* token = StreamReadToken(stream);
+	EntitySetName(entity, token);
 
 	if (entity && stream)
 	{
@@ -105,6 +106,7 @@ void EntityRead(Entity* entity, Stream stream)
 			{
 				entity->transform = TransformCreate();
 				TransformRead(entity->transform, stream);
+				
 			}
 			else if (!strncmp(token, "Physics", _countof("Physics")))
 			{

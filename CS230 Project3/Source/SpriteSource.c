@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// File Name:	Stub.c
+// File Name:	SpriteSource.c
 // Author(s):	Leo Mauya  0069791
 // Project:		Project 0
 // Course:		CS230S26
@@ -95,11 +95,11 @@ void SpriteSourceGetUV(const SpriteSource* spriteSource, unsigned int frameIndex
 {
 
 
-	int col = frameIndex % spriteSource->numCols;
-	int row = frameIndex / spriteSource->numCols;
+	float col = 1.0f / spriteSource->numCols;
+	float row = 1.0f / spriteSource->numRows;
 
-	*u = (float)col/spriteSource->numCols;
-	*v = (float)row / spriteSource->numRows;
+	*u = col * (frameIndex % spriteSource->numCols);
+	*v = row * (frameIndex / spriteSource->numCols);
 
 }
 	

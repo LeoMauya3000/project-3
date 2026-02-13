@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// File Name:	StubScene.c
+// File Name:	Level1Scene.c
 // Author(s):	Leo Mauya  0069791
 // Project:		Project 1
 // Course:		CS230S26
@@ -28,6 +28,7 @@
 #include "DemoScene.h"
 #include "Animation.h"
 #include "Vector2D.h"
+#include "CheatSystem.h"
 
 
 //------------------------------------------------------------------------------
@@ -88,6 +89,7 @@ typedef struct Level1Scene
  static Sprite* textSprite;
  static SpriteSource* textSpriteSource;
  Monkeystates monkeyState = MonkeyInvalid;
+
 
 //------------------------------------------------------------------------------
 // Public Variables:
@@ -180,6 +182,9 @@ static void Level1SceneLoad(void)
 	
 }
 
+
+
+
 // Initialize the entities and variables used by the scene.
 static void Level1SceneInit(void)
 {
@@ -224,6 +229,7 @@ static void Level1SceneUpdate(float dt)
 	EntityUpdate(monkeyEntity, dt);
 	EntityUpdate(livesTextEntity, dt);
 
+
 	if (Level1SceneIsColliding(monkeyEntity, createdEntity))
 	{
 		instance.numLives--;
@@ -240,6 +246,7 @@ static void Level1SceneUpdate(float dt)
 		}
 
 	}
+	/*
 	if (DGL_Input_KeyTriggered('1'))
 	{
 
@@ -263,7 +270,7 @@ static void Level1SceneUpdate(float dt)
 	{
 		SceneSystemSetNext(DemoSceneGetInstance());
 	}
-
+	*/
 }
 
 // Render any objects associated with the scene.
@@ -313,15 +320,16 @@ static void Level1SceneMovementController(Entity *entity)
 		if (DGL_Input_KeyDown(VK_LEFT))
 		{
 			velocity.x = -moveVelocity;
-			if (monkeyState != MonkeyJump && monkeyState != MonkeyWalk)
+			if (monkeyState != MonkeyJump)
 			{
-				Level1SceneSetMonkeyState(entity, MonkeyWalk);
+				Level1SceneSetMonkeyState(entity, MonkeyWalk); 
+	
 			}
 		}
 		else if (DGL_Input_KeyDown(VK_RIGHT))
 		{
 			velocity.x = moveVelocity;
-			if (monkeyState != MonkeyJump && monkeyState != MonkeyWalk)
+			if (monkeyState != MonkeyJump)
 			{
 				Level1SceneSetMonkeyState(entity, MonkeyWalk);
 			}
@@ -361,7 +369,7 @@ static void Level1SceneSetMonkeyState(Entity* entity, Monkeystates newState)
 {
 	Sprite* monkeySpriteLocal = EntityGetSprite(entity);
 	Animation* monkeyAnimationComponent = EntityGetAnimation(entity);
-	AnimationSetParent(monkeyAnimationComponent, entity);
+
 
 	if (monkeyState != (Monkeystates)newState)
 	{
@@ -377,12 +385,14 @@ static void Level1SceneSetMonkeyState(Entity* entity, Monkeystates newState)
 			SpriteSetMesh(monkeySpriteLocal, monkeyMesh);
 			SpriteSetSpriteSource(monkeySpriteLocal, monkeySpriteSourceWalk);
 			AnimationPlay(monkeyAnimationComponent, 8, 0.05f, true);
+	
 			break;
 		    case MonkeyJump:
 			SpriteSetMesh(monkeySpriteLocal, createdMesh);
 			SpriteSetSpriteSource(monkeySpriteLocal, monkeySpriteSourceJump);
 			AnimationPlay(monkeyAnimationComponent, 1, 0.0f, false);
 			break;
+			default: break;
 		}
 		
 	}
@@ -397,11 +407,12 @@ static void Level1SceneBounceController(Entity* entity)
 {
 	Physics *entityPhysics = EntityGetPhysics(entity);
 	Transform* entityTransform = EntityGetTransform(entity);
-	Vector2D position = *TransformGetTranslation(entityTransform);
-	Vector2D velocity = *PhysicsGetVelocity(entityPhysics);
+
 
 	if (entityPhysics && entityTransform)	
 	{
+		Vector2D position = *TransformGetTranslation(entityTransform);
+		Vector2D velocity = *PhysicsGetVelocity(entityPhysics);
 		if (position.x <= -wallDistance)
 		{
 			position.x = -wallDistance;

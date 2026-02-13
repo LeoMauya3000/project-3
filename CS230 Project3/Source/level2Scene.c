@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// File Name:	StubScene.c
+// File Name:	Level2Scene.c
 // Author(s):	Leo Mauya  0069791
 // Project:		Project 1
 // Course:		CS230S26
@@ -152,28 +152,6 @@ static void level2SceneUpdate(float dt)
 	{
 		SpriteSetAlpha(EntityGetSprite(instance.createdEntity), 1.0f);
 	}
-	if (DGL_Input_KeyTriggered('1'))
-	{
-		SceneSystemSetNext(Level1SceneGetInstance());
-	}
-	if (DGL_Input_KeyTriggered('2'))
-	{
-		TransformSetTranslation(EntityGetTransform(instance.createdEntity), &resetVec);
-		PhysicsSetVelocity(EntityGetPhysics(instance.createdEntity), &resetVec);
-		PhysicsSetAcceleration(EntityGetPhysics(instance.createdEntity), &resetVec);
-		SceneSystemSetNext(level2SceneGetInstance());
-	}
-	if (DGL_Input_KeyTriggered('9'))
-	{
-		SceneSystemSetNext(SandBoxSceneGetInstance());
-	}
-	if (DGL_Input_KeyTriggered('0'))
-	{
-		SceneSystemSetNext(DemoSceneGetInstance());
-	}
-
-	
-	
 
 
 	// NOTE: This call causes the engine to exit immediately.  Make sure to remove

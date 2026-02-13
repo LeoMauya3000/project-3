@@ -64,6 +64,7 @@ typedef struct
 // Get the instance of the Stub System.
 BaseSystem* CheatSystemGetInstance(void);
 
+
 /*----------------------------------------------------------------------------*/
 
 #ifdef __cplusplus
